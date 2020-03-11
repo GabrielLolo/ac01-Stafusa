@@ -29,7 +29,8 @@ class ConectarDB:
                 cep INTEGER,
                 email TEXT,
                 telefone INTEGER,
-                carteira_saude INTEGER)''')
+                carteira_saude INTEGER,
+                senha TEXT)''')
         except Exception as e:
             print(f'[x] Falha ao criar tabela [x]: {e}')
         else:
@@ -50,7 +51,8 @@ class ConectarDB:
                 faculdade TEXT,
                 experiencia TEXT,
                 crn INTEGER,
-                preco_consulta)''')
+                preco_consulta, 
+                senha TEXT)''')
         except Exception as e:
             print(f'[x] Falha ao criar tabela [x]: {e}')
         else:
@@ -63,7 +65,7 @@ class ConectarDB:
         """
         try:
             self.cur.execute(
-                '''INSERT INTO Cliente VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', usuario)
+                '''INSERT INTO Cliente VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', usuario)
         except Exception as e:
             print('\n[x] Falha ao inserir registro [x]\n')
             print(f'[x] Revertendo operação (rollback) [x]: {e}\n')
@@ -77,7 +79,7 @@ class ConectarDB:
     def inserir_registro_nutricionista(self, nutricionista):
         try:
             self.cur.execute(
-                '''INSERT INTO Nutricionistas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', nutricionista)
+                '''INSERT INTO Nutricionistas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', nutricionista)
         except Exception as e:
             print('\n[x] Falha ao inserir registro [x]\n')
             print(f'[x] Revertendo operação (rollback) [x]: {e}\n')
@@ -109,11 +111,11 @@ class ConectarDB:
         """
         return self.cur.execute('''SELECT * FROM Nutricionistas LIMIT ?''', (limit,)).fetchall()
 
-    def alterar_registro_cliente(self, rowid, nome, sexo, idade, endereco, cep, email, telefone, carteira_saude):
+    def alterar_registro_cliente(self, rowid, nome, sexo, idade, endereco, cep, email, telefone, carteira_saude, senha):
         #Alterar uma linha da tabela com base na id.
         try:
             self.cur.execute(
-                '''UPDATE Cliente SET nome=?, sexo=?, idade=?, endereco=?, cep=?, email=?, telefone=?, carteira_saude=? WHERE rowid=?''', (nome, sexo, idade, endereco, cep, email, telefone, carteira_saude, rowid))
+                '''UPDATE Cliente SET nome=?, sexo=?, idade=?, endereco=?, cep=?, email=?, telefone=?, carteira_saude=?, senha=? WHERE rowid=?''', (nome, sexo, idade, endereco, cep, email, telefone, carteira_saude, senha, rowid))
         except Exception as e:
             print('\n[x] Falha na alteração do registro [x]\n')
             print(f'[x] Revertendo operação (rollback) [x]: {e}\n')
@@ -122,11 +124,11 @@ class ConectarDB:
             self.con.commit()
             print('\n[!] Registro alterado com sucesso [!]\n')
 
-    def alterar_registro_nutricionista(self, rowid, nome, sexo, idade, endereco, cep, email, telefone, curso, faculdade, experiencia, crn, preco_consulta):
+    def alterar_registro_nutricionista(self, rowid, nome, sexo, idade, endereco, cep, email, telefone, curso, faculdade, experiencia, crn, preco_consulta, senha):
         #Alterar uma linha da tabela com base na id.
         try:
             self.cur.execute(
-                '''UPDATE Nutricionistas SET nome=?, sexo=?, idade=?, endereco=?, cep=?, email=?, telefone=?, curso=?, faculdade=?, experiencia=?, crn=?, preco_consulta=?  WHERE rowid=?''', (nome, sexo, idade, endereco, cep, email, telefone, curso, faculdade, experiencia, crn, preco_consulta, rowid))
+                '''UPDATE Nutricionistas SET nome=?, sexo=?, idade=?, endereco=?, cep=?, email=?, telefone=?, curso=?, faculdade=?, experiencia=?, crn=?, preco_consulta=?, senha=?  WHERE rowid=?''', (nome, sexo, idade, endereco, cep, email, telefone, curso, faculdade, experiencia, crn, preco_consulta, senha, rowid))
         except Exception as e:
             print('\n[x] Falha na alteração do registro [x]\n')
             print(f'[x] Revertendo operação (rollback) [x]: {e}\n')
@@ -167,10 +169,13 @@ class ConectarDB:
 
 if __name__ == '__main__':
     # Dados
+
     usuario = ('Maria', 40, 'Masculino', '04442220069', 'rua Loira bonita',
-    '03020580', 'maria.teste@gmail.com', '11111-1111', '111222333333444')
+    '03020580', 'maria.teste@gmail.com', '11111-1111', '111222333333444', 'professorlindo123')
+
     nutricionista=('Lucas lindo', 50, 'Masculino', '04442220069', 'rua lindo programador',
-    '06065260', 'lucas.teste@gmail.com', '11111-1111', 'Nutricao', 'Mackenzie', 'trabalhei em duas clinicas', '12345', '100')
+    '06065260', 'lucas.teste@gmail.com', '11111-1111', 'Nutricao', 'Mackenzie', 
+    'trabalhei em duas clinicas', '12345', '100', 'professornota10')
 
     
                 
@@ -179,8 +184,8 @@ if __name__ == '__main__':
     banco = ConectarDB()
 
     # Inserindo nas tabelas
-    # banco.inserir_registro_cliente(usuario=usuario)
-    # banco.inserir_registro_nutricionista(nutricionista=nutricionista)
+    banco.inserir_registro_cliente(usuario=usuario)
+    banco.inserir_registro_nutricionista(nutricionista=nutricionista)
 
     # Consultando com filtro.
     # print(banco.consultar_registro_pela_id_cliente(rowid=1))
@@ -196,7 +201,7 @@ if __name__ == '__main__':
     # # Verificando o antes
     # print(banco.consultar_registro_pela_id_cliente(rowid=1))
     # # Alterando
-    # banco.alterar_registro_cliente(rowid=1, nome='Cristina', sexo='Feminino', idade='20', cep='11111222', email='cristina@lindona.com.br', endereco='rua dos abacaxis', telefone='11111-3333', carteira_saude='123456789124587')
+    # banco.alterar_registro_cliente(rowid=1, nome='Cristina', sexo='Feminino', idade='20', cep='11111222', email='cristina@lindona.com.br', endereco='rua dos abacaxis', telefone='11111-3333', carteira_saude='123456789124587', senha='professorlindao')
     # # pós mudança
     # print(banco.consultar_registro_pela_id_cliente(rowid=1))
 
@@ -204,7 +209,7 @@ if __name__ == '__main__':
     # # Verificando o antes
     # print(banco.consultar_registro_pela_id_nutricionista(rowid=1))
     # # Alterando
-    # banco.alterar_registro_nutricionista(rowid=1, nome='Bruno', sexo='Masculino', idade='40', cep='11111555', email='bruno@lindao.com.br', endereco='um lugar longe', telefone='11111-5555', curso='Nutricao', faculdade='USP', experiencia='trabalhei em 5 clinicas', crn='54321', preco_consulta='150')
+    # banco.alterar_registro_nutricionista(rowid=1, nome='Bruno', sexo='Masculino', idade='40', cep='11111555', email='bruno@lindao.com.br', endereco='um lugar longe', telefone='11111-5555', curso='Nutricao', faculdade='USP', experiencia='trabalhei em 5 clinicas', crn='54321', preco_consulta='150', senha='ricardao')
     # # pós mudança
     # print(banco.consultar_registro_pela_id_nutricionista(rowid=1))
 
